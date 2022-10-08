@@ -1,7 +1,10 @@
+from audioop import cross
 import random
+from re import L
 import sys
 import numpy as np
 from map_constants import CHARACTERS, LIMITS, PROBABILITIES, CARDINALS
+from BFS import can_reach_points
 
 
 class GameMap:
@@ -24,7 +27,7 @@ class GameMap:
         for i in range(self.height):
             row = []
             for j in range(self.width):
-                row.append(CHARACTERS["grass"])
+                row.append(CHARACTERS["path"])
             self.ascii_map.append(row)
 
     # get a random empty spot on the map
@@ -55,6 +58,7 @@ class GameMap:
             empty_pos = self.get_empty_spot()
             self.ascii_map[empty_pos[1]][empty_pos[0]] = CHARACTERS["trainer"]
 
+    # add a town to the map
     def construct_town(self):
         random_w = random.randint(LIMITS["town"][0], LIMITS["town"][1])
         random_h = random.randint(LIMITS["town"][0], LIMITS["town"][1])
@@ -111,15 +115,59 @@ class GameMap:
     # populate the map with the player, items, and trainers
     def generate_map(self):
         self.init_rand_map()
-        # add path
-        self.construct_town()
-        self.place_player()
-        self.place_items()
-        self.place_trainers()
-        self.place_trees()
-        self.place_wild_grass()
+        self.drawPath()
+        # self.construct_town()
+        # self.place_player()
+        # self.place_items()
+        # self.place_trainers()
+        # self.place_trees()
+        # self.place_wild_grass()
+
+    # make a path on the map
+    def drawPath(self):
+        #pick some random points on the edge of the map
+        crosspoints = []
+        for i in range(LIMITS["path"][0],LIMITS["path"][1]):
+            side = "x" if random.random() < 0.5 else "y"
+            if side == "x":
+                point = ((random.randint(0,self.width-1),0) if random.random() < 0.5 else (random.randint(0,self.width-1),self.height)) 
+                crosspoints.append(point)
+            else:
+                point = ((0,random.randint(0,self.height-1)) if random.random() < 0.5 else (self.width,random.randint(0,self.height-1)))
+                crosspoints.append(point)
+
+        #define all of the path spots on the map
+        path_spots = []
+        for x in range(self.width):
+            for y in range(self.height):
+                path_spots.append((x, y))
+
+        visited = []
+        m2 = self.ascii_map.copy()   #make a copy of the make that has untraversed spots
+
+        #add grass until cannot reach any more points
+        while len(visited) != len(path_spots):
+            #randomize the path spots
+            random.shuffle(path_spots)
+
+            #try to remove from the map
+            spot = path_spots[0]
+            m2[spot[1]][spot[0]] = CHARACTERS["tree"]
+
+            #check if the spot is reachable
+            if can_reach_points(m2, crosspoints, crosspoints[0]):
+                path_spots.pop(spot)
+                self.ascii_map[spot[1]][spot[0]] = CHARACTERS["grass"]
+                self.empty_spots.append(spot)
+                visited = []
+            #put it back if it is not reachable
+            else:
+                m2[spot[1]][spot[0]] = CHARACTERS["path"]
+                visited.append(spot)
+
 
     # print the map to the console
     def print_map(self):
         for row in self.ascii_map:
             print("".join([x[0] for x in row]))
+ 
