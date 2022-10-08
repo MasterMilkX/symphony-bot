@@ -1,9 +1,9 @@
-from map_pcg import SongMap
+from map_pcg import GameMap
 
 
 def main():
     # create a map
-    gameMap = SongMap(20, 10)
+    gameMap = GameMap(20, 10)
     gameMap.generate_map()
     gameMap.print_map()
 
