@@ -130,11 +130,13 @@ class GameMap:
         for i in range(LIMITS["path"][0],LIMITS["path"][1]):
             side = "x" if random.random() < 0.5 else "y"
             if side == "x":
-                point = ((random.randint(0,self.width-1),0) if random.random() < 0.5 else (random.randint(0,self.width-1),self.height)) 
+                point = ((random.randint(0,self.width-1),0) if random.random() < 0.5 else (random.randint(0,self.width-1),self.height-1)) 
                 crosspoints.append(point)
             else:
-                point = ((0,random.randint(0,self.height-1)) if random.random() < 0.5 else (self.width,random.randint(0,self.height-1)))
+                point = ((0,random.randint(0,self.height-1)) if random.random() < 0.5 else (self.width-1,random.randint(0,self.height-1)))
                 crosspoints.append(point)
+
+        print(crosspoints)
 
         #define all of the path spots on the map
         path_spots = []
@@ -156,7 +158,7 @@ class GameMap:
 
             #check if the spot is reachable
             if can_reach_points(m2, crosspoints, crosspoints[0]):
-                path_spots.pop(spot)
+                path_spots.remove(spot)
                 self.ascii_map[spot[1]][spot[0]] = CHARACTERS["grass"]
                 self.empty_spots.append(spot)
                 visited = []
@@ -164,6 +166,10 @@ class GameMap:
             else:
                 m2[spot[1]][spot[0]] = CHARACTERS["path"]
                 visited.append(spot)
+
+        #print the fake map
+        for i in m2:
+            print("".join([x[0] for x in i]))
 
 
     # print the map to the console

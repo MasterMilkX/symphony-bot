@@ -14,6 +14,7 @@ def can_reach_points(m,reach_points,start_point):
                 if (y>=0 and y<len(m) and x>=0 and x<len(m[0])):
                     if m[y][x][1]:   #if the spot is walkable
                         queue.append((x,y))
+
     for point in reach_points:
         if point not in visited:
             return False
