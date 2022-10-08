@@ -1,11 +1,12 @@
 from map_pcg import SongMap
 
+
 def main():
-    #create a map
-    map = SongMap(10,10)
-    map.init_rand_map()
-    map.place_player()
-    map.print_map()
+    # create a map
+    gameMap = SongMap(10, 10)
+    gameMap.generate_map()
+    gameMap.print_map()
+
 
 if __name__ == "__main__":
     main()
