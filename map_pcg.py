@@ -14,13 +14,13 @@ class GameMap:
         self.ascii_map = []
         self.width = width
         self.height = height
-        self.create_all_empty()
 
     # create a list of all empty spots on the map
     def create_all_empty(self):
         for x in range(self.width):
             for y in range(self.height):
-                self.empty_spots.append((x, y))
+                if self.ascii_map[y][x] == CHARACTERS["grass"]:
+                    self.empty_spots.append((x, y))
 
     # create a map of the given size
     def init_rand_map(self):
@@ -116,15 +116,16 @@ class GameMap:
     def generate_map(self):
         self.init_rand_map()
         self.drawPath()
-        # self.construct_town()
-        # self.place_player()
-        # self.place_items()
-        # self.place_trainers()
-        # self.place_trees()
-        # self.place_wild_grass()
+        self.create_all_empty()
+        self.construct_town()
+        self.place_player()
+        self.place_items()
+        self.place_trainers()
+        self.place_trees()
+        self.place_wild_grass()
 
     # make a path on the map
-    def drawPath(self):
+    def drawPath(self,DEBUG=False):
         #pick some random points on the edge of the map
         crosspoints = []
         for i in range(LIMITS["path"][0],LIMITS["path"][1]):
@@ -136,7 +137,6 @@ class GameMap:
                 point = ((0,random.randint(0,self.height-1)) if random.random() < 0.5 else (self.width-1,random.randint(0,self.height-1)))
                 crosspoints.append(point)
 
-        print(crosspoints)
 
         #define all of the path spots on the map
         path_spots = []
@@ -145,7 +145,13 @@ class GameMap:
                 path_spots.append((x, y))
 
         visited = []
-        m2 = self.ascii_map.copy()   #make a copy of the make that has untraversed spots
+        #make a copy of the make that has untraversed spots
+        m2 = []
+        for h in range(self.height):
+            row = []
+            for w in range(self.width):
+                row.append(self.ascii_map[h][w])
+            m2.append(row)
 
         #add grass until cannot reach any more points
         while len(visited) != len(path_spots):
@@ -167,9 +173,16 @@ class GameMap:
                 m2[spot[1]][spot[0]] = CHARACTERS["path"]
                 visited.append(spot)
 
-        #print the fake map
-        for i in m2:
-            print("".join([x[0] for x in i]))
+
+        if DEBUG:
+            #print the fake map
+            for c in crosspoints:
+                m2[c[1]][c[0]] = ("X",False)
+
+            print(len(m2),len(m2[0]))
+            
+            for i in m2:
+                print("".join([x[0] for x in i]))
 
 
     # print the map to the console
