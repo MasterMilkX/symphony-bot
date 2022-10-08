@@ -63,8 +63,8 @@ class GameMap:
         random_w = random.randint(LIMITS["town"][0], LIMITS["town"][1])
         random_h = random.randint(LIMITS["town"][0], LIMITS["town"][1])
 
-        boundaries_x = random.randint(0-random_w, self.width)
-        boundaries_y = random.randint(0-random_h, self.height)
+        boundaries_x = random.randint(0 - random_w, self.width)
+        boundaries_y = random.randint(0 - random_h, self.height)
 
         for i in range(random_w):
             for j in range(random_h):
@@ -125,27 +125,28 @@ class GameMap:
         self.place_wild_grass()
 
     # make a path on the map
-    def drawPath(self,DEBUG=False):
-        #pick some random points on the edge of the map
+    def drawPath(self, DEBUG=False):
+        # pick some random points on the edge of the map
         crosspoints = []
-        for i in range(LIMITS["path"][0],LIMITS["path"][1]):
+        for i in range(LIMITS["path"][0], LIMITS["path"][1]):
             side = "x" if random.random() < 0.5 else "y"
             if side == "x":
-                point = ((random.randint(0,self.width-1),0) if random.random() < 0.5 else (random.randint(0,self.width-1),self.height-1)) 
+                point = ((random.randint(0, self.width - 1), 0) if random.random() < 0.5 else (
+                    random.randint(0, self.width - 1), self.height - 1))
                 crosspoints.append(point)
             else:
-                point = ((0,random.randint(0,self.height-1)) if random.random() < 0.5 else (self.width-1,random.randint(0,self.height-1)))
+                point = ((0, random.randint(0, self.height - 1)) if random.random() < 0.5 else (
+                    self.width - 1, random.randint(0, self.height - 1)))
                 crosspoints.append(point)
 
-
-        #define all of the path spots on the map
+        # define all the path spots on the map
         path_spots = []
         for x in range(self.width):
             for y in range(self.height):
                 path_spots.append((x, y))
 
         visited = []
-        #make a copy of the make that has untraversed spots
+        # make a copy of the make that has untraveled spots
         m2 = []
         for h in range(self.height):
             row = []
@@ -153,40 +154,37 @@ class GameMap:
                 row.append(self.ascii_map[h][w])
             m2.append(row)
 
-        #add grass until cannot reach any more points
+        # add grass until cannot reach any more points
         while len(visited) != len(path_spots):
-            #randomize the path spots
+            # randomize the path spots
             random.shuffle(path_spots)
 
-            #try to remove from the map
+            # try to remove from the map
             spot = path_spots[0]
             m2[spot[1]][spot[0]] = CHARACTERS["tree"]
 
-            #check if the spot is reachable
+            # check if the spot is reachable
             if can_reach_points(m2, crosspoints, crosspoints[0]):
                 path_spots.remove(spot)
                 self.ascii_map[spot[1]][spot[0]] = CHARACTERS["grass"]
                 self.empty_spots.append(spot)
                 visited = []
-            #put it back if it is not reachable
+            # put it back if it is not reachable
             else:
                 m2[spot[1]][spot[0]] = CHARACTERS["path"]
                 visited.append(spot)
 
-
         if DEBUG:
-            #print the fake map
+            # print the fake map
             for c in crosspoints:
-                m2[c[1]][c[0]] = ("X",False)
+                m2[c[1]][c[0]] = ("X", False)
 
-            print(len(m2),len(m2[0]))
-            
+            print(len(m2), len(m2[0]))
+
             for i in m2:
                 print("".join([x[0] for x in i]))
-
 
     # print the map to the console
     def print_map(self):
         for row in self.ascii_map:
             print("".join([x[0] for x in row]))
- 
